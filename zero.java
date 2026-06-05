@@ -4,20 +4,19 @@
 //START
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.*;
-import javax.swing.JOptionPane;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import javax.swing.*;
 public class zero extends JPanel implements KeyListener {
 	boolean ACCELERATING = false;
-	boolean DECELERATING = false;
+	boolean CHANGELOGGING = true;
 	boolean DEBUG = true;
+	boolean DECELERATING = false;
 	boolean DIRTY = true;
 	boolean KEYLOGGING = false;
 	boolean LOADLOGGING = true;
+	boolean PURE = true;
 	int ACCELERATION = 0;
 	int BOOST;
 	int BOUNCE = 0;
@@ -25,12 +24,14 @@ public class zero extends JPanel implements KeyListener {
 	int FRICTION;
 	int GRAVITY;
 	int HEIGHT;
-	int LIGHTSPEED;
+	int LIGHTSPEED;	
 	int OBJECTS;
+	int TICKS = 0;
 	int WIDTH;
 	int X;
 	int Y;
-	int[][] MAP = {{6,100,100,50,50,8,3,1,25,6},{0,100,200,700,10},{0,100,350,800,10},{0,100,650,1000,10},{1,400,625,10,10},{2,350,575,10,10},{1,-5000,800,10000,10000}};
+	String FILE = "maps/0.bin";
+	int[][] MAP = {{0}};
 	
 	
 	
@@ -57,24 +58,52 @@ public class zero extends JPanel implements KeyListener {
 	//Does: display what is supposed to be displayed on the window.
 	protected void paintComponent(Graphics pDRAW) {
 		super.paintComponent(pDRAW);
-		pDRAW.drawRect(X, Y, WIDTH, HEIGHT);
 		int pOBJECTS = OBJECTS;
 		while(0<pOBJECTS) {
-			if(MAP[pOBJECTS][0] == 0) {
+			if(MAP[pOBJECTS][0] == 5) {
+				pDRAW.setColor(new Color(222, 208, 224));
+				pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+			}
+			if(MAP[pOBJECTS][0] == 7) {
+				pDRAW.setColor(new Color(222, 208, 224));
 				pDRAW.drawRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
 			}
-			if(MAP[pOBJECTS][0] == 1) {
-				pDRAW.setColor(Color.RED);
+			if(MAP[pOBJECTS][0] < 0) {
+				pDRAW.setColor(new Color(0, 255, 0));
 				pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
-				pDRAW.setColor(Color.BLACK);
+			}
+			if(MAP[pOBJECTS][0] == 0) {
+				pDRAW.setColor(new Color(0, 0, 0));
+				pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+			}
+			if(MAP[pOBJECTS][0] == 1) {
+				pDRAW.setColor(new Color(255, 0, 0));
+				pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
 			}
 			if(MAP[pOBJECTS][0] == 2) {
-				pDRAW.setColor(Color.GREEN);
+				pDRAW.setColor(new Color(0, 128, 255));
 				pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
-				pDRAW.setColor(Color.BLACK);
+			}
+			if(MAP[pOBJECTS][0] == 3) {
+				pDRAW.setColor(new Color(255, 153, 0));
+				pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+			}
+			if(MAP[pOBJECTS][0] == 4) {
+				pDRAW.setColor(new Color(128, 0, 128));
+				pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+			}
+			if(MAP[pOBJECTS][0] == 6) {
+				pDRAW.setColor(new Color(128, 0, 128));
+				pDRAW.drawRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+			}
+			if(MAP[pOBJECTS][0] == 8) {
+				pDRAW.setColor(new Color(11, 133, 0));
+				pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
 			}
 			pOBJECTS = pOBJECTS - 1;
 		}
+		pDRAW.setColor(Color.BLACK);
+		pDRAW.drawRect(X, Y, WIDTH, HEIGHT);
 	}
 		
 		
@@ -83,22 +112,22 @@ public class zero extends JPanel implements KeyListener {
 	//Runs: every milisecond.
 	//Does: physics.
 	public void physics() {
+		TICKS = TICKS + 1;
 		if(MAP[0][0] == 0) {
 			if(LOADLOGGING) {
 				System.out.println("[LOADLOGGING] 0 objects are stated in MAP, so the game will assume that the map needs reloading.");
 			}
 			try {
-				try(ObjectInputStream hSTREAM = new ObjectInputStream(new FileInputStream("map.bin"))) {
-					Object hOBJECT = hSTREAM.readObject();
-					MAP = (int[][]) hOBJECT;
-					DIRTY = true;
+				try(ObjectInputStream pSTREAM = new ObjectInputStream(new FileInputStream(FILE))) {
+					Object pOBJECT = pSTREAM.readObject();
+					MAP = (int[][]) pOBJECT;
 					if(LOADLOGGING) {
-						System.out.println("[LOADLOGGING] Successfully loaded map.bin.");
+						System.out.println("[LOADLOGGING] Successfully loaded "+FILE+".");
 					}
 				}
 			} catch(IOException | ClassNotFoundException e) {
 				if(LOADLOGGING) {
-					System.out.println("[LOADLOGGING] Failed to load map.bin.");
+					System.out.println("[LOADLOGGING] Failed to load "+FILE+".");
 				}
 			}
 		}
@@ -114,6 +143,13 @@ public class zero extends JPanel implements KeyListener {
 			GRAVITY = MAP[0][8];
 			LIGHTSPEED = MAP[0][9];
 			DIRTY = false;
+			if(!PURE) {
+				MAP[0][0] = 0;
+				PURE = true;
+				if(LOADLOGGING) {
+					System.out.println("[LOADLOGGING] PURE was set to false, so the game stated that there are 0 objects in order to trigger a map reload.");
+				}
+			}
 		}
 		if(ACCELERATING&ACCELERATION<LIGHTSPEED) {
 			ACCELERATION = ACCELERATION + FORCE;
@@ -135,7 +171,7 @@ public class zero extends JPanel implements KeyListener {
 			}
 			BOUNCE = BOUNCE-1;
 		}
-		else if(true) {
+		else {
 			int hFALL = GRAVITY;
 			while(0 < hFALL) {
 				if(unfallable()) {
@@ -148,31 +184,27 @@ public class zero extends JPanel implements KeyListener {
 			}
 		}
 		if(0 < ACCELERATION) {
-			if(true) {
-				int hRIGHT = ACCELERATION;
-				while(0 < hRIGHT) {
-					if(unaccelerable()) {
-						hRIGHT = 0;
-					}
-					else {
-						X = X+1;
-						hRIGHT = hRIGHT-1;
-					}
+			int hRIGHT = ACCELERATION;
+			while(0 < hRIGHT) {
+				if(unaccelerable()) {
+					hRIGHT = 0;
+				}
+				else {
+					X = X+1;
+					hRIGHT = hRIGHT-1;
 				}
 			}
 			ACCELERATION = ACCELERATION-FRICTION;
 		}
 		if(ACCELERATION < 0) {
-			if(true) {
-				int hLEFT = ACCELERATION;
-				while(hLEFT < 0) {
-					if(undeccelerable()) {
-						hLEFT = 0;
-					}
-					else {
-						X = X-1;
-						hLEFT = hLEFT+1;
-					}
+			int hLEFT = ACCELERATION;
+			while(hLEFT < 0) {
+				if(undeccelerable()) {
+					hLEFT = 0;
+				}
+				else {
+					X = X-1;
+					hLEFT = hLEFT+1;
 				}
 			}
 			ACCELERATION = ACCELERATION+FRICTION;
@@ -204,19 +236,30 @@ public class zero extends JPanel implements KeyListener {
 		if(kKEY.equals("Right")) {
 			ACCELERATING = true;
 		}
-		if(kKEY.equals("F1")) {
-			if(LOADLOGGING) {
-				System.out.println("[LOADLOGGING] F1 was pressed, which will set the ammount of objects stated to 0 in order to trigger a refresh.");
-			}
-			MAP[0][0] = 0;
-		}
-		if(kKEY.equals("F2")) {
-			DIRTY = true;
-		}
-		if(kKEY.equals("F3")) {
-			if(DEBUG) {
-				System.out.println("[DEBUG] ACCELERATING = " + ACCELERATING);
-			}
+		if(kKEY.equals("F3")&DEBUG) {
+			System.out.println("[DEBUG] ACCELERATING = "+ACCELERATING);
+			System.out.println("[DEBUG] CHANGELOGGING = "+CHANGELOGGING);
+			System.out.println("[DEBUG] DEBUG = "+DEBUG);
+			System.out.println("[DEBUG] DECELERATING = "+DECELERATING);
+			System.out.println("[DEBUG] DIRTY = "+DIRTY);
+			System.out.println("[DEBUG] KEYLOGGING = "+KEYLOGGING);
+			System.out.println("[DEBUG] LOADLOGGING = "+LOADLOGGING);
+			System.out.println("[DEBUG] PURE = "+PURE);
+			System.out.println("[DEBUG] ACCELERATION = "+ACCELERATION);
+			System.out.println("[DEBUG] BOOST = "+BOOST);
+			System.out.println("[DEBUG] BOUNCE = "+BOUNCE);
+			System.out.println("[DEBUG] FORCE = "+FORCE);
+			System.out.println("[DEBUG] FRICTION = "+FRICTION);
+			System.out.println("[DEBUG] GRAVITY = "+GRAVITY);
+			System.out.println("[DEBUG] HEIGHT = "+HEIGHT);
+			System.out.println("[DEBUG] LIGHTSPEED = "+LIGHTSPEED);
+			System.out.println("[DEBUG] OBJECTS = "+OBJECTS);
+			System.out.println("[DEBUG] TICKS = "+TICKS);
+			System.out.println("[DEBUG] WIDTH = "+WIDTH);
+			System.out.println("[DEBUG] X = "+X);
+			System.out.println("[DEBUG] Y = "+Y);
+			System.out.println("[DEBUG] FILE = "+FILE);
+			System.out.println("[DEBUG] MAP = "+MAP);
 		}
 	}
 	
@@ -243,7 +286,7 @@ public class zero extends JPanel implements KeyListener {
 	public boolean irrisable() {
 		int iOBJECTS = OBJECTS;
 		while(0<iOBJECTS) {
-			if(Y-MAP[iOBJECTS][4] == MAP[iOBJECTS][2]   &   MAP[iOBJECTS][1]-WIDTH < X   &   X < MAP[iOBJECTS][1]+MAP[iOBJECTS][3]) {
+			if(MAP[iOBJECTS][0] != 5   &   MAP[iOBJECTS][0] != 7   &   Y-MAP[iOBJECTS][4] == MAP[iOBJECTS][2]   &   MAP[iOBJECTS][1]-WIDTH < X   &   X < MAP[iOBJECTS][1]+MAP[iOBJECTS][3]) {
 				collision(MAP[iOBJECTS][0]);
 				return true;
 			}
@@ -260,7 +303,7 @@ public class zero extends JPanel implements KeyListener {
 	public boolean unfallable() {
 		int uOBJECTS = OBJECTS;
 		while(0<uOBJECTS) {
-			if(Y+HEIGHT == MAP[uOBJECTS][2]   &   MAP[uOBJECTS][1]-WIDTH < X   &   X < MAP[uOBJECTS][1]+MAP[uOBJECTS][3]) {
+			if(MAP[uOBJECTS][0] != 5   &   MAP[uOBJECTS][0] != 7   &   Y+HEIGHT == MAP[uOBJECTS][2]   &   MAP[uOBJECTS][1]-WIDTH < X   &   X < MAP[uOBJECTS][1]+MAP[uOBJECTS][3]) {
 				collision(MAP[uOBJECTS][0]);
 				return true;
 			}
@@ -277,7 +320,7 @@ public class zero extends JPanel implements KeyListener {
 	public boolean unaccelerable() {
 		int nOBJECTS = OBJECTS;
 		while(0<nOBJECTS) {
-			if(X+WIDTH == MAP[nOBJECTS][1]   &   MAP[nOBJECTS][2]-HEIGHT < Y   &   Y < MAP[nOBJECTS][2]+MAP[nOBJECTS][4]) {
+			if(MAP[nOBJECTS][0] != 5   &   MAP[nOBJECTS][0] != 7   &   X+WIDTH == MAP[nOBJECTS][1]   &   MAP[nOBJECTS][2]-HEIGHT < Y   &   Y < MAP[nOBJECTS][2]+MAP[nOBJECTS][4]) {
 				collision(MAP[nOBJECTS][0]);
 				return true;
 			}
@@ -294,7 +337,7 @@ public class zero extends JPanel implements KeyListener {
 	public boolean undeccelerable() {
 		int dOBJECTS = OBJECTS;
 		while(0<dOBJECTS) {
-			if(X-MAP[dOBJECTS][3] == MAP[dOBJECTS][1]   &   MAP[dOBJECTS][2]-HEIGHT < Y   &   Y < MAP[dOBJECTS][2]+MAP[dOBJECTS][4]) {
+			if(MAP[dOBJECTS][0] != 5   &   MAP[dOBJECTS][0] != 7   &   X-MAP[dOBJECTS][3] == MAP[dOBJECTS][1]   &   MAP[dOBJECTS][2]-HEIGHT < Y   &   Y < MAP[dOBJECTS][2]+MAP[dOBJECTS][4]) {
 				collision(MAP[dOBJECTS][0]);
 				return true;
 			}
@@ -309,12 +352,108 @@ public class zero extends JPanel implements KeyListener {
 	//Runs: when collision(cTYPE) is called with cTYPE being an integer declaring the type of object the player is colliding with.
 	//Does: any action that is supposed to be done when the player is colliding with that type of object.
 	public void collision(int cTYPE) {
+		if(cTYPE < 0) {
+			FILE = "maps/"+Integer.toString(cTYPE*-1)+".bin";
+			MAP[0][0] = 0;
+			DIRTY = true;
+		}
 		if(cTYPE == 1) {
 			DIRTY = true;
 		}
 		if(cTYPE == 2) {
-			JOptionPane.showMessageDialog(null,"You win!","",JOptionPane.INFORMATION_MESSAGE);
-			System.exit(0);
+			if(BOOST < MAP[0][5]*2) {
+				BOOST = BOOST+1;
+				if(CHANGELOGGING) {
+					System.out.println("[CHANGELOGGING] collision has increased BOOST by 1.");
+				}
+			}
+			if(GRAVITY < MAP[0][8]*2) {
+				GRAVITY = GRAVITY+1;
+				if(CHANGELOGGING) {
+					System.out.println("[CHANGELOGGING] collision has increased GRAVITY by 1.");
+				}
+			}
+			if(MAP[0][4]/2 < HEIGHT) {
+				HEIGHT = HEIGHT-1;
+				if(CHANGELOGGING) {
+					System.out.println("[CHANGELOGGING] collision has decreased HEIGHT by 1.");
+				}
+			}
+			if(MAP[0][3]/2 < WIDTH) {
+				WIDTH = WIDTH-1;
+				if(CHANGELOGGING) {
+					System.out.println("[CHANGELOGGING] collision has decreased WIDTH by 1.");
+				}
+			}
+		}
+		if(cTYPE == 3) {
+			if(MAP[0][5]/2 < BOOST) {
+				BOOST = BOOST-1;
+				if(CHANGELOGGING) {
+					System.out.println("[CHANGELOGGING] collision has decreased BOOST by 1.");
+				}
+			}
+			if(MAP[0][8]/2 < GRAVITY) {
+				GRAVITY = GRAVITY-1;
+				if(CHANGELOGGING) {
+					System.out.println("[CHANGELOGGING] collision has decreased GRAVITY by 1.");
+				}
+			}
+			if(HEIGHT < MAP[0][4]*2) {
+				HEIGHT = HEIGHT+1;
+				if(CHANGELOGGING) {
+					System.out.println("[CHANGELOGGING] collision has increased HEIGHT by 1.");
+				}
+				Y = Y-1;
+				if(CHANGELOGGING) {
+					System.out.println("[CHANGELOGGING] collision has decreased Y by 1.");
+				}
+			}
+			if(WIDTH < MAP[0][3]*2) {
+				WIDTH = WIDTH+1;
+				if(CHANGELOGGING) {
+					System.out.println("[CHANGELOGGING] collision has increased WIDTH by 1.");
+				}
+			}
+		}
+		if(cTYPE == 4) {
+			int cOBJECTS = OBJECTS;
+			while(0<cOBJECTS) {
+				if(MAP[cOBJECTS][0] == 6) {
+					MAP[cOBJECTS][0] = 7;
+					if(CHANGELOGGING) {
+						System.out.println("[CHANGELOGGING] collision has set MAP["+cOBJECTS+"][0] to 7.");
+					}
+					X = MAP[cOBJECTS][1];
+					if(CHANGELOGGING) {
+						System.out.println("[CHANGELOGGING] collision has set X to "+MAP[cOBJECTS][1]+".");
+					}
+					Y = MAP[cOBJECTS][2];
+					if(CHANGELOGGING) {
+						System.out.println("[CHANGELOGGING] collision has set X to "+MAP[cOBJECTS][2]+".");
+					}
+					WIDTH = MAP[cOBJECTS][3];
+					if(CHANGELOGGING) {
+						System.out.println("[CHANGELOGGING] collision has set X to "+MAP[cOBJECTS][3]+".");
+					}
+					HEIGHT = MAP[cOBJECTS][4];
+					if(CHANGELOGGING) {
+						System.out.println("[CHANGELOGGING] collision has set X to "+MAP[cOBJECTS][4]+".");
+					}
+					PURE = false;
+					if(LOADLOGGING) {
+						System.out.println("[LOADLOGGING] collision has set PURE to false, meaning the map will be refreshed from memory next time the map data needs to be refreshed from disk.");
+					}
+					break;
+				}
+				cOBJECTS = cOBJECTS - 1;
+			}
+			MAP[cTYPE][0] = 5;
+		}
+		if(cTYPE == 8) {
+			FILE = "maps/0.bin";
+			MAP[0][0] = 0;
+			DIRTY = true;
 		}
 	}
 	

@@ -4,9 +4,13 @@
 //START
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.HashMap;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 public class zero extends JPanel implements KeyListener {
 	boolean ACCELERATING = false;
@@ -15,8 +19,8 @@ public class zero extends JPanel implements KeyListener {
 	boolean DECELERATING = false;
 	boolean DIRTY = true;
 	boolean KEYLOGGING = false;
-	boolean LOADLOGGING = true;
-	boolean PURE = true;
+	boolean PURE = false;
+	boolean TEXTURING = true;
 	int ACCELERATION = 0;
 	int BOOST;
 	int BOUNCE = 0;
@@ -30,14 +34,16 @@ public class zero extends JPanel implements KeyListener {
 	int WIDTH;
 	int X;
 	int Y;
-	String FILE = "maps/0.bin";
-	int[][] MAP = {{0}};
+	String FILE = "maps/home.bin";
+	String TEXTURE = "resources/PLAYERstill.png";
+	int[][] MAP = {{0,0,0,0,0,0,0,0,0,0}};
+	HashMap<String, Image> IMAGES = new HashMap<>();
 	
 	
 	
 	//Name: main (m)
 	//Runs: at startup.
-	//Does: set up the window, start the painting and key listening, and start physics' timer.
+	//Does: set up the window, start the painting and key listening, and starts a timer to run physics every milisecond.
 	public static void main(String[] args) {
 		JFrame mWINDOW=new JFrame("");
 		zero mPANEL = new zero();
@@ -59,51 +65,65 @@ public class zero extends JPanel implements KeyListener {
 	protected void paintComponent(Graphics pDRAW) {
 		super.paintComponent(pDRAW);
 		int pOBJECTS = OBJECTS;
-		while(0<pOBJECTS) {
-			if(MAP[pOBJECTS][0] == 5) {
-				pDRAW.setColor(new Color(222, 208, 224));
-				pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+		if(TEXTURING) {
+			while(0<pOBJECTS) {
+				Image pOBJECT = loadImage("resources/"+MAP[pOBJECTS][0]+".png");
+				if(pOBJECT!=null) {
+					pDRAW.drawImage(pOBJECT, MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4], this);
+				}
+				pOBJECTS = pOBJECTS - 1;
 			}
-			if(MAP[pOBJECTS][0] == 7) {
-				pDRAW.setColor(new Color(222, 208, 224));
-				pDRAW.drawRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+			Image pPLAYER = loadImage(TEXTURE);
+			if(pPLAYER!=null) {
+				pDRAW.drawImage(pPLAYER, X, Y, WIDTH, HEIGHT, this);
 			}
-			if(MAP[pOBJECTS][0] < 0) {
-				pDRAW.setColor(new Color(0, 255, 0));
-				pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+		} else {
+			while(0<pOBJECTS) {
+				if(MAP[pOBJECTS][0] == 5) {
+					pDRAW.setColor(new Color(222, 208, 224));
+					pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+				}
+				if(MAP[pOBJECTS][0] == 7) {
+					pDRAW.setColor(new Color(222, 208, 224));
+					pDRAW.drawRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+				}
+				if(MAP[pOBJECTS][0] < 0) {
+					pDRAW.setColor(new Color(0, 255, 0));
+					pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+				}
+				if(MAP[pOBJECTS][0] == 0) {
+					pDRAW.setColor(new Color(0, 0, 0));
+					pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+				}
+				if(MAP[pOBJECTS][0] == 1) {
+					pDRAW.setColor(new Color(255, 0, 0));
+					pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+				}
+				if(MAP[pOBJECTS][0] == 2) {
+					pDRAW.setColor(new Color(0, 128, 255));
+					pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+				}
+				if(MAP[pOBJECTS][0] == 3) {
+					pDRAW.setColor(new Color(255, 153, 0));
+					pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+				}
+				if(MAP[pOBJECTS][0] == 4) {
+					pDRAW.setColor(new Color(128, 0, 128));
+					pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+				}
+				if(MAP[pOBJECTS][0] == 6) {
+					pDRAW.setColor(new Color(128, 0, 128));
+					pDRAW.drawRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+				}
+				if(MAP[pOBJECTS][0] == 8) {
+					pDRAW.setColor(new Color(11, 133, 0));
+					pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+				}
+				pOBJECTS = pOBJECTS - 1;
 			}
-			if(MAP[pOBJECTS][0] == 0) {
-				pDRAW.setColor(new Color(0, 0, 0));
-				pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
-			}
-			if(MAP[pOBJECTS][0] == 1) {
-				pDRAW.setColor(new Color(255, 0, 0));
-				pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
-			}
-			if(MAP[pOBJECTS][0] == 2) {
-				pDRAW.setColor(new Color(0, 128, 255));
-				pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
-			}
-			if(MAP[pOBJECTS][0] == 3) {
-				pDRAW.setColor(new Color(255, 153, 0));
-				pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
-			}
-			if(MAP[pOBJECTS][0] == 4) {
-				pDRAW.setColor(new Color(128, 0, 128));
-				pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
-			}
-			if(MAP[pOBJECTS][0] == 6) {
-				pDRAW.setColor(new Color(128, 0, 128));
-				pDRAW.drawRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
-			}
-			if(MAP[pOBJECTS][0] == 8) {
-				pDRAW.setColor(new Color(11, 133, 0));
-				pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
-			}
-			pOBJECTS = pOBJECTS - 1;
+			pDRAW.setColor(Color.BLACK);
+			pDRAW.drawRect(X, Y, WIDTH, HEIGHT);
 		}
-		pDRAW.setColor(Color.BLACK);
-		pDRAW.drawRect(X, Y, WIDTH, HEIGHT);
 	}
 		
 		
@@ -113,25 +133,11 @@ public class zero extends JPanel implements KeyListener {
 	//Does: physics.
 	public void physics() {
 		TICKS = TICKS + 1;
-		if(MAP[0][0] == 0) {
-			if(LOADLOGGING) {
-				System.out.println("[LOADLOGGING] 0 objects are stated in MAP, so the game will assume that the map needs reloading.");
-			}
-			try {
-				try(ObjectInputStream pSTREAM = new ObjectInputStream(new FileInputStream(FILE))) {
-					Object pOBJECT = pSTREAM.readObject();
-					MAP = (int[][]) pOBJECT;
-					if(LOADLOGGING) {
-						System.out.println("[LOADLOGGING] Successfully loaded "+FILE+".");
-					}
-				}
-			} catch(IOException | ClassNotFoundException e) {
-				if(LOADLOGGING) {
-					System.out.println("[LOADLOGGING] Failed to load "+FILE+".");
-				}
-			}
-		}
 		if(DIRTY) {
+			if(!PURE) {
+				loadMap();
+				PURE = true;
+			}
 			OBJECTS = MAP[0][0];
 			X = MAP[0][1];
 			Y = MAP[0][2];
@@ -143,19 +149,28 @@ public class zero extends JPanel implements KeyListener {
 			GRAVITY = MAP[0][8];
 			LIGHTSPEED = MAP[0][9];
 			DIRTY = false;
-			if(!PURE) {
-				MAP[0][0] = 0;
-				PURE = true;
-				if(LOADLOGGING) {
-					System.out.println("[LOADLOGGING] PURE was set to false, so the game stated that there are 0 objects in order to trigger a map reload.");
-				}
+		}
+		if(ACCELERATING) {
+			if(ACCELERATION<LIGHTSPEED) {
+				ACCELERATION = ACCELERATION+FORCE;				
+				TEXTURE = "resources/PLAYERaccelerate.png";
+			} else {			
+				TEXTURE = "resources/PLAYERlightspeed.png";
 			}
-		}
-		if(ACCELERATING&ACCELERATION<LIGHTSPEED) {
-			ACCELERATION = ACCELERATION + FORCE;
-		}
-		if(DECELERATING&LIGHTSPEED*-1<ACCELERATION) {
-			ACCELERATION = ACCELERATION - FORCE;
+		} else if(DECELERATING) {
+			if(LIGHTSPEED*-1<ACCELERATION) {
+				ACCELERATION = ACCELERATION-FORCE;
+				TEXTURE = "resources/PLAYERdecelerate.png";
+			} else {			
+				TEXTURE = "resources/PLAYERdelightspeed.png";
+			}
+			
+		} else if(TEXTURE != "resources/PLAYERstill.png"   &   TEXTURE != "resources/PLAYERdestill.png") {
+			if(TEXTURE == "resources/PLAYERaccelerate.png"   |   TEXTURE == "resources/PLAYERlightspeed.png") {
+				TEXTURE = "resources/PLAYERstill.png";
+			} else {
+				TEXTURE = "resources/PLAYERdestill.png";
+			}
 		}
 		if(0<BOUNCE) {
 			int hRISE = GRAVITY;
@@ -236,6 +251,15 @@ public class zero extends JPanel implements KeyListener {
 		if(kKEY.equals("Right")) {
 			ACCELERATING = true;
 		}
+		if(kKEY.equals("F1")&DEBUG) {
+			if(TEXTURING) {
+				TEXTURING = false;
+				System.out.println("[DEBUG] Disabled TEXTURING.");
+			} else {
+				TEXTURING = true;
+				System.out.println("[DEBUG] Enabled TEXTURING.");
+			}
+		}
 		if(kKEY.equals("F3")&DEBUG) {
 			System.out.println("[DEBUG] ACCELERATING = "+ACCELERATING);
 			System.out.println("[DEBUG] CHANGELOGGING = "+CHANGELOGGING);
@@ -243,8 +267,8 @@ public class zero extends JPanel implements KeyListener {
 			System.out.println("[DEBUG] DECELERATING = "+DECELERATING);
 			System.out.println("[DEBUG] DIRTY = "+DIRTY);
 			System.out.println("[DEBUG] KEYLOGGING = "+KEYLOGGING);
-			System.out.println("[DEBUG] LOADLOGGING = "+LOADLOGGING);
 			System.out.println("[DEBUG] PURE = "+PURE);
+			System.out.println("[DEBUG] TEXTURING = "+TEXTURING);
 			System.out.println("[DEBUG] ACCELERATION = "+ACCELERATION);
 			System.out.println("[DEBUG] BOOST = "+BOOST);
 			System.out.println("[DEBUG] BOUNCE = "+BOUNCE);
@@ -259,7 +283,9 @@ public class zero extends JPanel implements KeyListener {
 			System.out.println("[DEBUG] X = "+X);
 			System.out.println("[DEBUG] Y = "+Y);
 			System.out.println("[DEBUG] FILE = "+FILE);
+			System.out.println("[DEBUG] TEXTURE = "+TEXTURE);
 			System.out.println("[DEBUG] MAP = "+MAP);
+			System.out.println("[DEBUG] IMAGES = "+IMAGES);
 		}
 	}
 	
@@ -353,9 +379,8 @@ public class zero extends JPanel implements KeyListener {
 	//Does: any action that is supposed to be done when the player is colliding with that type of object.
 	public void collision(int cTYPE) {
 		if(cTYPE < 0) {
-			FILE = "maps/"+Integer.toString(cTYPE*-1)+".bin";
-			MAP[0][0] = 0;
-			DIRTY = true;
+			FILE = "maps/"+cTYPE+".bin";
+			loadMap();
 		}
 		if(cTYPE == 1) {
 			DIRTY = true;
@@ -441,9 +466,6 @@ public class zero extends JPanel implements KeyListener {
 						System.out.println("[CHANGELOGGING] collision has set X to "+MAP[cOBJECTS][4]+".");
 					}
 					PURE = false;
-					if(LOADLOGGING) {
-						System.out.println("[LOADLOGGING] collision has set PURE to false, meaning the map will be refreshed from memory next time the map data needs to be refreshed from disk.");
-					}
 					break;
 				}
 				cOBJECTS = cOBJECTS - 1;
@@ -451,9 +473,43 @@ public class zero extends JPanel implements KeyListener {
 			MAP[cTYPE][0] = 5;
 		}
 		if(cTYPE == 8) {
-			FILE = "maps/0.bin";
-			MAP[0][0] = 0;
-			DIRTY = true;
+			FILE = "maps/home.bin";
+			loadMap();
+		}
+	}
+	
+	
+	
+	//Name: loadMap (l)
+	//Runs: when loadMap() is called.
+	//Does: load FILE as a map and then enables DIRTY, queuing a player refresh.
+	public void loadMap() {
+		OBJECTS = 0;
+		try {
+			try(ObjectInputStream lSTREAM = new ObjectInputStream(new FileInputStream(FILE))) {
+				MAP = (int[][]) lSTREAM.readObject();
+			}
+		} catch(IOException | ClassNotFoundException lERROR) {}	
+	DIRTY = true;
+	}
+	
+	
+	
+	//Name: loadImage (o)
+	//Runs: when loadImage(oPATH) is called, with oPATH being the path to the image that needs to be loaded.
+	//Does: return oPATH from IMAGES if oPATH is in IMAGES, or if oPATH is not in IMAGES, load oPATH as an image, saves oPATH into IMAGES, and returns oPATH.
+	public Image loadImage(String oPATH) {
+		if(IMAGES.containsKey(oPATH)) {
+			return IMAGES.get(oPATH);
+		} else {
+			try {
+				File oFILE = new File(oPATH);
+				Image oIMAGE = ImageIO.read(oFILE);
+				IMAGES.put(oPATH,oIMAGE);
+				return(oIMAGE);
+			} catch (IOException oERROR) {
+				return null;
+			}
 		}
 	}
 	

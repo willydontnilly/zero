@@ -30,6 +30,7 @@ public class zero extends JPanel implements KeyListener {
 	int HEIGHT;
 	int LIGHTSPEED;	
 	int OBJECTS;
+	int OFFSET = 0;
 	int TICKS = 0;
 	int WIDTH;
 	int X;
@@ -49,6 +50,7 @@ public class zero extends JPanel implements KeyListener {
 		zero mPANEL = new zero();
 		mWINDOW.add(mPANEL);
 		mWINDOW.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mWINDOW.setUndecorated(true);
 		mWINDOW.setVisible(true);	
 		mWINDOW.addKeyListener(mPANEL);
 		mWINDOW.setSize(1000,1000);
@@ -69,7 +71,7 @@ public class zero extends JPanel implements KeyListener {
 			while(0<pOBJECTS) {
 				Image pOBJECT = loadImage("resources/"+MAP[pOBJECTS][0]+".png");
 				if(pOBJECT!=null) {
-					pDRAW.drawImage(pOBJECT, MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4], this);
+					pDRAW.drawImage(pOBJECT, findX(pOBJECTS), MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4], this);
 				}
 				pOBJECTS = pOBJECTS - 1;
 			}
@@ -81,43 +83,43 @@ public class zero extends JPanel implements KeyListener {
 			while(0<pOBJECTS) {
 				if(MAP[pOBJECTS][0] == 5) {
 					pDRAW.setColor(new Color(222, 208, 224));
-					pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+					pDRAW.fillRect(findX(pOBJECTS), MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
 				}
 				if(MAP[pOBJECTS][0] == 7) {
 					pDRAW.setColor(new Color(222, 208, 224));
-					pDRAW.drawRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+					pDRAW.drawRect(findX(pOBJECTS), MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
 				}
 				if(MAP[pOBJECTS][0] < 0) {
 					pDRAW.setColor(new Color(0, 255, 0));
-					pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+					pDRAW.fillRect(findX(pOBJECTS), MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
 				}
 				if(MAP[pOBJECTS][0] == 0) {
 					pDRAW.setColor(new Color(0, 0, 0));
-					pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+					pDRAW.fillRect(findX(pOBJECTS), MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
 				}
 				if(MAP[pOBJECTS][0] == 1) {
 					pDRAW.setColor(new Color(255, 0, 0));
-					pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+					pDRAW.fillRect(findX(pOBJECTS), MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
 				}
 				if(MAP[pOBJECTS][0] == 2) {
 					pDRAW.setColor(new Color(0, 128, 255));
-					pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+					pDRAW.fillRect(findX(pOBJECTS), MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
 				}
 				if(MAP[pOBJECTS][0] == 3) {
 					pDRAW.setColor(new Color(255, 153, 0));
-					pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+					pDRAW.fillRect(findX(pOBJECTS), MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
 				}
 				if(MAP[pOBJECTS][0] == 4) {
 					pDRAW.setColor(new Color(128, 0, 128));
-					pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+					pDRAW.fillRect(findX(pOBJECTS), MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
 				}
 				if(MAP[pOBJECTS][0] == 6) {
 					pDRAW.setColor(new Color(128, 0, 128));
-					pDRAW.drawRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+					pDRAW.drawRect(findX(pOBJECTS), MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
 				}
 				if(MAP[pOBJECTS][0] == 8) {
 					pDRAW.setColor(new Color(11, 133, 0));
-					pDRAW.fillRect(MAP[pOBJECTS][1], MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
+					pDRAW.fillRect(findX(pOBJECTS), MAP[pOBJECTS][2], MAP[pOBJECTS][3], MAP[pOBJECTS][4]);
 				}
 				pOBJECTS = pOBJECTS - 1;
 			}
@@ -138,6 +140,7 @@ public class zero extends JPanel implements KeyListener {
 				loadMap();
 				PURE = true;
 			}
+			OFFSET = 0;
 			OBJECTS = MAP[0][0];
 			X = MAP[0][1];
 			Y = MAP[0][2];
@@ -180,7 +183,11 @@ public class zero extends JPanel implements KeyListener {
 					hRISE = 0;
 				}
 				else {
-					Y = Y-1;
+					if(-1000 < Y) {
+						Y = Y-1;
+					} else {
+						DIRTY = true;
+					}
 					hRISE = hRISE-1;
 				}
 			}
@@ -193,7 +200,11 @@ public class zero extends JPanel implements KeyListener {
 					hFALL = 0;
 				}
 				else {
-					Y = Y+1;
+					if(Y < 1000) {
+						Y = Y+1;
+					} else {
+						DIRTY = true;
+					}
 					hFALL = hFALL-1;
 				}
 			}
@@ -205,7 +216,11 @@ public class zero extends JPanel implements KeyListener {
 					hRIGHT = 0;
 				}
 				else {
-					X = X+1;
+					if(X<600) {
+						X = X+1;
+					} else {
+						OFFSET = OFFSET-1;
+					}
 					hRIGHT = hRIGHT-1;
 				}
 			}
@@ -218,7 +233,11 @@ public class zero extends JPanel implements KeyListener {
 					hLEFT = 0;
 				}
 				else {
-					X = X-1;
+					if(550<X) {
+						X = X-1;
+					} else {
+						OFFSET = OFFSET+1;
+					}
 					hLEFT = hLEFT+1;
 				}
 			}
@@ -238,7 +257,7 @@ public class zero extends JPanel implements KeyListener {
 			System.out.println("[KEYLOGGING] "+kKEY);
 		}
 		if(kKEY.equals("Escape")) {
-			System.exit(0);
+			exit();
 		}
 		if(kKEY.equals("Up")) {
 			if(unfallable()) {
@@ -278,6 +297,7 @@ public class zero extends JPanel implements KeyListener {
 			System.out.println("[DEBUG] HEIGHT = "+HEIGHT);
 			System.out.println("[DEBUG] LIGHTSPEED = "+LIGHTSPEED);
 			System.out.println("[DEBUG] OBJECTS = "+OBJECTS);
+			System.out.println("[DEBUG] OFFSET = "+OFFSET);
 			System.out.println("[DEBUG] TICKS = "+TICKS);
 			System.out.println("[DEBUG] WIDTH = "+WIDTH);
 			System.out.println("[DEBUG] X = "+X);
@@ -312,8 +332,8 @@ public class zero extends JPanel implements KeyListener {
 	public boolean irrisable() {
 		int iOBJECTS = OBJECTS;
 		while(0<iOBJECTS) {
-			if(MAP[iOBJECTS][0] != 5   &   MAP[iOBJECTS][0] != 7   &   Y-MAP[iOBJECTS][4] == MAP[iOBJECTS][2]   &   MAP[iOBJECTS][1]-WIDTH < X   &   X < MAP[iOBJECTS][1]+MAP[iOBJECTS][3]) {
-				collision(MAP[iOBJECTS][0]);
+			if(MAP[iOBJECTS][0] != 5   &   MAP[iOBJECTS][0] != 7   &   Y-MAP[iOBJECTS][4] == MAP[iOBJECTS][2]   &   findX(iOBJECTS)-WIDTH < X   &   X < findX(iOBJECTS)+MAP[iOBJECTS][3]) {
+				collision(iOBJECTS);
 				return true;
 			}
 			iOBJECTS = iOBJECTS - 1;
@@ -329,8 +349,8 @@ public class zero extends JPanel implements KeyListener {
 	public boolean unfallable() {
 		int uOBJECTS = OBJECTS;
 		while(0<uOBJECTS) {
-			if(MAP[uOBJECTS][0] != 5   &   MAP[uOBJECTS][0] != 7   &   Y+HEIGHT == MAP[uOBJECTS][2]   &   MAP[uOBJECTS][1]-WIDTH < X   &   X < MAP[uOBJECTS][1]+MAP[uOBJECTS][3]) {
-				collision(MAP[uOBJECTS][0]);
+			if(MAP[uOBJECTS][0] != 5   &   MAP[uOBJECTS][0] != 7   &   Y+HEIGHT == MAP[uOBJECTS][2]   &   findX(uOBJECTS)-WIDTH < X   &   X < findX(uOBJECTS)+MAP[uOBJECTS][3]) {
+				collision(uOBJECTS);
 				return true;
 			}
 			uOBJECTS = uOBJECTS - 1;
@@ -346,8 +366,8 @@ public class zero extends JPanel implements KeyListener {
 	public boolean unaccelerable() {
 		int nOBJECTS = OBJECTS;
 		while(0<nOBJECTS) {
-			if(MAP[nOBJECTS][0] != 5   &   MAP[nOBJECTS][0] != 7   &   X+WIDTH == MAP[nOBJECTS][1]   &   MAP[nOBJECTS][2]-HEIGHT < Y   &   Y < MAP[nOBJECTS][2]+MAP[nOBJECTS][4]) {
-				collision(MAP[nOBJECTS][0]);
+			if(MAP[nOBJECTS][0] != 5   &   MAP[nOBJECTS][0] != 7   &   X+WIDTH == findX(nOBJECTS)   &   MAP[nOBJECTS][2]-HEIGHT < Y   &   Y < MAP[nOBJECTS][2]+MAP[nOBJECTS][4]) {
+				collision(nOBJECTS);
 				return true;
 			}
 			nOBJECTS = nOBJECTS - 1;
@@ -363,8 +383,8 @@ public class zero extends JPanel implements KeyListener {
 	public boolean undeccelerable() {
 		int dOBJECTS = OBJECTS;
 		while(0<dOBJECTS) {
-			if(MAP[dOBJECTS][0] != 5   &   MAP[dOBJECTS][0] != 7   &   X-MAP[dOBJECTS][3] == MAP[dOBJECTS][1]   &   MAP[dOBJECTS][2]-HEIGHT < Y   &   Y < MAP[dOBJECTS][2]+MAP[dOBJECTS][4]) {
-				collision(MAP[dOBJECTS][0]);
+			if(MAP[dOBJECTS][0] != 5   &   MAP[dOBJECTS][0] != 7   &   X-MAP[dOBJECTS][3] == findX(dOBJECTS)   &   MAP[dOBJECTS][2]-HEIGHT < Y   &   Y < MAP[dOBJECTS][2]+MAP[dOBJECTS][4]) {
+				collision(dOBJECTS);
 				return true;
 			}
 			dOBJECTS = dOBJECTS - 1;
@@ -375,17 +395,15 @@ public class zero extends JPanel implements KeyListener {
 		
 		
 	//Name: collision (c)
-	//Runs: when collision(cTYPE) is called with cTYPE being an integer declaring the type of object the player is colliding with.
+	//Runs: when collision(cTYPE) is called with cOBJECT being the number of the object the player is colliding with.
 	//Does: any action that is supposed to be done when the player is colliding with that type of object.
-	public void collision(int cTYPE) {
-		if(cTYPE < 0) {
-			FILE = "maps/"+cTYPE+".bin";
+	public void collision(int cOBJECT) {
+		if(MAP[cOBJECT][0] < 0) {
+			FILE = "maps/"+MAP[cOBJECT][0]+".bin";
 			loadMap();
-		}
-		if(cTYPE == 1) {
+		} else if(MAP[cOBJECT][0] == 1) {
 			DIRTY = true;
-		}
-		if(cTYPE == 2) {
+		} else if(MAP[cOBJECT][0] == 2) {
 			if(BOOST < MAP[0][5]*2) {
 				BOOST = BOOST+1;
 				if(CHANGELOGGING) {
@@ -410,8 +428,7 @@ public class zero extends JPanel implements KeyListener {
 					System.out.println("[CHANGELOGGING] collision has decreased WIDTH by 1.");
 				}
 			}
-		}
-		if(cTYPE == 3) {
+		} else if(MAP[cOBJECT][0] == 3) {
 			if(MAP[0][5]/2 < BOOST) {
 				BOOST = BOOST-1;
 				if(CHANGELOGGING) {
@@ -440,8 +457,7 @@ public class zero extends JPanel implements KeyListener {
 					System.out.println("[CHANGELOGGING] collision has increased WIDTH by 1.");
 				}
 			}
-		}
-		if(cTYPE == 4) {
+		} else if(MAP[cOBJECT][0] == 4) {
 			int cOBJECTS = OBJECTS;
 			while(0<cOBJECTS) {
 				if(MAP[cOBJECTS][0] == 6) {
@@ -449,9 +465,9 @@ public class zero extends JPanel implements KeyListener {
 					if(CHANGELOGGING) {
 						System.out.println("[CHANGELOGGING] collision has set MAP["+cOBJECTS+"][0] to 7.");
 					}
-					X = MAP[cOBJECTS][1];
+					X = findX(cOBJECTS);
 					if(CHANGELOGGING) {
-						System.out.println("[CHANGELOGGING] collision has set X to "+MAP[cOBJECTS][1]+".");
+						System.out.println("[CHANGELOGGING] collision has set X to "+findX(cOBJECTS)+".");
 					}
 					Y = MAP[cOBJECTS][2];
 					if(CHANGELOGGING) {
@@ -470,11 +486,10 @@ public class zero extends JPanel implements KeyListener {
 				}
 				cOBJECTS = cOBJECTS - 1;
 			}
-			MAP[cTYPE][0] = 5;
+			MAP[cOBJECT][0] = 5;
 		}
-		if(cTYPE == 8) {
-			FILE = "maps/home.bin";
-			loadMap();
+		if(MAP[cOBJECT][0] == 8) {
+			exit();
 		}
 	}
 	
@@ -519,6 +534,29 @@ public class zero extends JPanel implements KeyListener {
 	//Runs: something about keys. I actually have no idea what this is used for, but the code doesn't run when I delete it.
 	//Does: nothing.
 	public void keyTyped(KeyEvent key) {
+	}
+	
+	
+	
+	//Name: findX (f)
+	//Runs: when findX(fOBJECT) is called, with fOBJECT being the number of the target object.
+	//Does: return the value that the object should be at on the screen.
+	public int findX(int fOBJECT) {
+		return MAP[fOBJECT][1]+OFFSET;
+	}
+	
+	
+	
+	//Name: exit (x)
+	//Runs: when exit() is called.
+	//Does: exit the game if the player is at home, or bring the player back to home if the player is not.
+	public void exit() {
+		if(FILE == "maps/home.bin") {
+			System.exit(0);
+		} else {
+			FILE = "maps/home.bin";
+			loadMap();
+		}
 	}
 	
 	

@@ -18,6 +18,7 @@ public class zero extends JPanel implements KeyListener {
 	boolean DEBUG = true;
 	boolean DECELERATING = false;
 	boolean DIRTY = true;
+	static boolean EIGHT = true;
 	boolean KEYLOGGING = false;
 	boolean PURE = false;
 	boolean TEXTURING = true;
@@ -46,8 +47,8 @@ public class zero extends JPanel implements KeyListener {
 	//Runs: at startup.
 	//Does: set up the window, start the painting and key listening, and starts a timer to run physics every milisecond.
 	public static void main(String[] args) {
-		JFrame mWINDOW=new JFrame("");
 		zero mPANEL = new zero();
+		JFrame mWINDOW=new JFrame("");
 		mWINDOW.add(mPANEL);
 		mWINDOW.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mWINDOW.setUndecorated(true);
@@ -56,6 +57,25 @@ public class zero extends JPanel implements KeyListener {
 		mWINDOW.setSize(1000,1000);
 		mWINDOW.setLocationRelativeTo(null);
 		mWINDOW.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		String mMESSAGE = "";
+		if(EIGHT   &   !System.getProperty("java.runtime.version").startsWith("1.8")) {
+			mMESSAGE = "I am a warning box who has to ask you to get Java Runtime Environment 8, as the game may give you a seizure or just not work as intended on this version.";
+		}   
+		if(!mMESSAGE.equals("")) {
+			zero mWARN = new zero();
+			mWARN.setLayout(new BoxLayout(mWARN, BoxLayout.Y_AXIS));
+			mWARN.add(new JLabel(mMESSAGE));
+			mWARN.add(new JLabel(" "));
+			mWARN.add(new JLabel("If you understand what I am saying and still wish to continue, then please enter the primary antonym to the word \"cold\""));
+			mWARN.add(new JLabel("If you do not understand what I am saying or do not wish to continue, then close me and the game will exit."));
+			JTextField mFIELD = new JTextField(20);
+			mWARN.add(mFIELD);
+			JOptionPane.showMessageDialog(null,mWARN,"",JOptionPane.WARNING_MESSAGE);
+			String mRESPONSE = mFIELD.getText().trim();
+				if(!mRESPONSE.equals("hot")) {
+					System.exit(0);
+				}
+		}
 		new Timer(1, e -> mPANEL.physics()).start();
 	}
 		
@@ -285,6 +305,7 @@ public class zero extends JPanel implements KeyListener {
 			System.out.println("[DEBUG] DEBUG = "+DEBUG);
 			System.out.println("[DEBUG] DECELERATING = "+DECELERATING);
 			System.out.println("[DEBUG] DIRTY = "+DIRTY);
+			System.out.println("[DEBUG] EIGHT = "+EIGHT);
 			System.out.println("[DEBUG] KEYLOGGING = "+KEYLOGGING);
 			System.out.println("[DEBUG] PURE = "+PURE);
 			System.out.println("[DEBUG] TEXTURING = "+TEXTURING);
